@@ -4,13 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import BaseFilter from './base';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SUPPORTED_PRODUCT_QUERY_PARAMS } from '@/lib/gql/utils/queryParams';
+import { productTypes } from '../layout/collections';
 
-const productTypeVariants = {
-	chairs: 'Chair',
-	lamps: 'Lamp',
-	tables: 'Table',
-} as const;
-type ProductTypeVariant = keyof typeof productTypeVariants;
+type ProductTypeVariant = keyof typeof productTypes;
 
 type ProductTypeProps = {};
 
@@ -23,11 +19,9 @@ export default function ProductType({}: ProductTypeProps) {
 		const paramName: keyof typeof SUPPORTED_PRODUCT_QUERY_PARAMS = 'category';
 		const paramValue = searchParams.getAll(paramName).flatMap((value) => value.split(','));
 		// filter out invalid values
-		const validValues = paramValue.filter((value) =>
-			Object.keys(productTypeVariants).includes(value),
-		) as ProductTypeVariant[];
+		const validValues = paramValue.filter((value) => Object.keys(productTypes).includes(value)) as ProductTypeVariant[];
 
-		return validValues.length >= 1 ? validValues : ['chairs', 'lamps', 'tables'];
+		return validValues.length >= 1 ? validValues : (Object.keys(productTypes) as ProductTypeVariant[]);
 	}, [searchParams]);
 
 	const [selected, setSelected] = useState<ProductTypeVariant[]>(getInitialSelection());
@@ -63,5 +57,5 @@ export default function ProductType({}: ProductTypeProps) {
 		router.push(url);
 	};
 
-	return <BaseFilter title="Product Type" items={productTypeVariants} isSelected={isSelected} onSelect={onSelect} />;
+	return <BaseFilter title="Product Types" items={productTypes} isSelected={isSelected} onSelect={onSelect} />;
 }
